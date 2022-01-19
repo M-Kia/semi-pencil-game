@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
-
+import { Line, Point } from "../utilities/Classes.jsx";
 
 export const PointContext = React.createContext({});
 
 export function PointWrapper({ children }) {
   const [points, setPoints] = useState([]);
   const [lines, setLines] = useState([]);
+  const [changesHappend, setChangesHappend] = useState(false);
 
-  function changeLine(arr) {
-    setLines(arr);
+  function changes() {
+    setChangesHappend(!changesHappend);
   }
 
   function validatePoints(number) {
@@ -31,11 +32,14 @@ export function PointWrapper({ children }) {
     // center = width > 1500 ? 450 : 250,
     // radius = width > 1500 ? 430 : 230;
 
+    Point.counter = 0;
+    Line.counter = 0;
     for (let i = 0; i < number; i++) {
       pointArr.push({
         id: i,
         x: center + radius * Math.cos(radi * i),
         y: center - radius * Math.sin(radi * i),
+        degree: [0, 0],
       });
     }
     let lineArr = [];
@@ -55,7 +59,7 @@ export function PointWrapper({ children }) {
 
   return (
     <PointContext.Provider
-      value={{ points, lines, validatePoints, changeLine }}
+      value={{ points, lines, changesHappend, validatePoints, changes }}
     >
       {children}
     </PointContext.Provider>

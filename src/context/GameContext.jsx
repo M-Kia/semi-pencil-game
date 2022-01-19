@@ -7,7 +7,7 @@ import { PointContext } from "./PointContext.jsx";
 export const GameContext = React.createContext({});
 
 export function GameWrapper({ children }) {
-  const { changeLine, lines } = useContext(PointContext);
+  const { points, lines, changes } = useContext(PointContext);
 
   const [playerTurn, setPlayerTurn] = useState(1);
 
@@ -19,50 +19,86 @@ export function GameWrapper({ children }) {
   }
 
   function selectLine(id) {
-    let theLines = lines.map((line) => {
-      if (line.id == id) return { ...line, type: playerTurn };
-      return line;
+    lines.forEach((line) => {
+      if (line.id == id) {
+        line.changeType = playerTurn;
+      }
     });
-    changeLine(theLines);
-    if (lostCondition(theLines)) {
+    if (lostCondition(lines)) {
       Swal.fire({
         title: `Player ${playerTurn == 1 ? 2 : 1} Won!!`,
       });
+      return;
     }
     changePlayerTurn();
+    changes();
   }
 
-  function lostCondition(lines) {
-      console.log(lines);
-    let similarPoints = [];
-    {
-      let thePoints = [];
-      lines.forEach((line) => {
-        if (line.type == playerTurn) {
-          let samePoint = thePoints.filter(
-            (point) => point.id == line.point1.id
-          );
-          if (samePoint.length > 0) {
-            if (samePoint.length == 1) {
-              similarPoints.push(line.point1);
-            }
-          }
-          samePoint = thePoints.filter((point) => point.id == line.point2.id);
-          if (samePoint.length > 0) {
-            if (samePoint.length == 1) {
-              similarPoints.push(line.point2);
-            }
-          }
-          thePoints.push(line.point1, line.point2);
-        }
-      });
+  function lostCondition(lines, player = -1) {
+    if (player == -1) {
+      player = playerTurn;
     }
-    console.log(similarPoints);
-    let theLines = lines.filter((line) => {
-      line.point.id;
-    });
+    let theLines = lines.filter(
+      (line) =>
+        line.type == player &&
+        line.point1.degree[player - 1] > 1 &&
+        line.point2.degree[player - 1] > 1
+    );
+    if (theLines < 3) return false;
+    let loose = false;
+    for (let i = 0; i < theLines.length - 1; i++) {
+      for (let j = i + 1; j < theLines.length; j++) {
+        if (
+          theLines[i].point1.id == theLines[j].point2.id ||
+          theLines[i].point2.id == theLines[j].point2.id
+        ) {
+          let temp = theLines.filter(
+            (line, index) =>
+              index != j &&
+              index != i &&
+              (line.point1.id == theLines[j].point1.id ||
+                line.point2.id == theLines[j].point1.id)
+          );
+          if (temp.length > 0) {
+            let temp2 = temp.filter(
+              (line) =>
+                line.point1.id == theLines[i].point1.id ||
+                line.point2.id == theLines[i].point1.id ||
+                line.point1.id == theLines[i].point2.id ||
+                line.poin2.id == theLines[i].point2.id
+            );
+            if (temp2.length > 0) {
+              loose = true;
+            }
+          }
+        } else if (
+          theLines[i].point1.id == theLines[j].point1.id ||
+          theLines[i].point2.id == theLines[j].point1.id
+        ) {
+          let temp = theLines.filter(
+            (line, index) =>
+              index != j &&
+              index != i &&
+              (line.point1.id == theLines[j].point2.id ||
+                line.point2.id == theLines[j].point2.id)
+          );
+          if (temp.length > 0) {
+            let temp2 = temp.filter(
+              (line) =>
+                line.point1.id == theLines[i].point1.id ||
+                line.point2.id == theLines[i].point1.id ||
+                line.point1.id == theLines[i].point2.id ||
+                line.poin2.id == theLines[i].point2.id
+            );
+            if (temp2.length > 0) {
+              loose = true;
+            }
+          }
+        }
+      }
+    }
     console.log(theLines);
-    return false;
+    return loose;
   }
 
   return (

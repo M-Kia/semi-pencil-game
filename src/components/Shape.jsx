@@ -44,7 +44,7 @@ function DrawCircle({ point }) {
 }
 
 export default function Shape() {
-  const { points, lines } = useContext(PointContext);
+  const { points, lines, changesHappend } = useContext(PointContext);
 
   const [refresher, setRefresher] = useState(false);
 
@@ -54,7 +54,7 @@ export default function Shape() {
 
   useEffect(() => {
     refresh();
-  }, [points, lines]);
+  }, [changesHappend]);
 
   return (
     <div

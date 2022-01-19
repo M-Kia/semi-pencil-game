@@ -14,12 +14,12 @@ export default function Main() {
 
   return (
     <div className="main">
-      <h1>
+      <h1 className="mb-5">
         Hello, Welcome to <span>Try Not To Make Trangle</span> challange!!
       </h1>
 
-      <form>
-        <div className="form-floating mb-3">
+      <div>
+        <div className="form-floating mt-5 mb-3">
           <input
             type="number"
             className="form-control"
@@ -31,10 +31,10 @@ export default function Main() {
           />
           <label htmlFor="floatingNumber">Number of Points</label>
         </div>
-      </form>
-      <button role="button" className="btn btn-primary" onClick={generator}>
-        Generate
-      </button>
+        <button role="button" className="btn btn-primary" onClick={generator}>
+          Generate
+        </button>
+      </div>
     </div>
   );
 }
