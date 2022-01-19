@@ -1,0 +1,65 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: auto;
+}
+
+#root {
+  width: 1300px;
+  height: 700px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: space-evenly;
+      -ms-flex-pack: space-evenly;
+          justify-content: space-evenly;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+#root .main {
+  width: 500px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+#root .main h1 {
+  font-size: 15px;
+}
+
+#root .main h1 span {
+  font-size: 22px;
+  font-weight: bolder;
+  color: blue;
+}
+
+#root .main h1 span::after, #root .main h1 span::before {
+  content: '"';
+  color: red;
+}
+
+#root .shape svg {
+  width: 600px;
+  height: 600px;
+}
+
+#root .shape svg .line.type0 {
+  stroke: #6f6f6f;
+  -webkit-transition: 0.5s ease-in-out;
+  transition: 0.5s ease-in-out;
+}
+
+#root .shape svg .line.type0:hover {
+  stroke: black;
+}
+
+#root .shape svg .line.type1 {
+  stroke: red;
+}
+
+#root .shape svg .line.type2 {
+  stroke: blue;
+}
+/*# sourceMappingURL=index.css.map */
