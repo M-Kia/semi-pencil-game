@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
-
-import { Line, Point } from "../utilities/Classes.jsx";
+import { CustomNode } from "../utilities/Classes.jsx";
 
 export const PointContext = React.createContext({});
 
 export function PointWrapper({ children }) {
-  const [points, setPoints] = useState([]);
-  const [lines, setLines] = useState([]);
   const [changesHappend, setChangesHappend] = useState(false);
+  const [currentNode, setCurrentNode] = useState(
+    new CustomNode([], [], 0, null)
+  );
+
+  function changeCurrentNode(node) {
+    setCurrentNode(node);
+  }
 
   function changes() {
     setChangesHappend(!changesHappend);
@@ -32,34 +36,45 @@ export function PointWrapper({ children }) {
     // center = width > 1500 ? 450 : 250,
     // radius = width > 1500 ? 430 : 230;
 
-    Point.counter = 0;
-    Line.counter = 0;
     for (let i = 0; i < number; i++) {
       pointArr.push({
         id: i,
-        x: center + radius * Math.cos(radi * i),
-        y: center - radius * Math.sin(radi * i),
+        x: center + radius * Math.cos(radi * i - Math.PI / 2),
+        y: center + radius * Math.sin(radi * i - Math.PI / 2),
         degree: [0, 0],
       });
     }
     let lineArr = [];
     for (let i = 0; i < number - 1; i++) {
       for (let j = i + 1; j < number; j++) {
+        let p1 = pointArr[i],
+          p2 = pointArr[j],
+          a = (p1.y - p2.y) / (p1.x - p2.x),
+          b = p1.y - a * p1.x;
         lineArr.push({
           id: i * number + j,
-          point1: pointArr[i],
-          point2: pointArr[j],
+          point1: p1,
+          point2: p2,
+          formula: { a, b },
           type: 0,
         });
       }
     }
-    setLines(lineArr);
-    setPoints(pointArr);
+    CustomNode.counter = 0;
+    setCurrentNode(new CustomNode(pointArr, lineArr, 1, null));
   }
 
   return (
     <PointContext.Provider
-      value={{ points, lines, changesHappend, validatePoints, changes }}
+      value={{
+        currentNode,
+        points: currentNode.points,
+        lines: currentNode.lines,
+        changesHappend,
+        validatePoints,
+        changes,
+        changeCurrentNode,
+      }}
     >
       {children}
     </PointContext.Provider>

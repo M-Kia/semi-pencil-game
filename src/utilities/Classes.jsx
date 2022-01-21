@@ -2,30 +2,54 @@ class CustomNode {
   static counter = 0;
   static depthLimit = 4;
   constructor(points, lines, type, parent) {
+    this.id = CustomNode.counter;
+    CustomNode.counter++;
     this.parent = parent;
     this.depth = parent !== null ? parent.depth + 1 : 1;
     this.points = JSON.parse(JSON.stringify(points));
     this.lines = JSON.parse(JSON.stringify(lines));
     this.value = 0;
+    this.isFinal = 0;
     this.children = [];
     this.type = type;
     this.isLeaf = CustomNode.depthLimit == this.depth ? true : false;
   }
 
+  depthChanger() {
+    this.depth--;
+    if (!"1-1".includes(this.isFinal) && this.children.length > 0) {
+      this.children.forEach((value) => value.depthChanger());
+      this.isLeaf = false;
+    }
+  }
+
   childrenGenerator(player) {
+    if (this.children.length > 0 || this.isLeaf || this.isFinal) return;
     if (this.lostCondition(1)) {
-      this.value = 10000000000000;
+      this.value = 1000000000000000000000000000;
       this.isLeaf = true;
+      this.isFinal = 1;
+      return;
     } else if (this.lostCondition(2)) {
-      this.value = -10000000000000;
+      this.value = -1000000000000000000000000000;
       this.isLeaf = true;
+      this.isFinal = -1;
+      return;
     }
     let unselectedLines = this.lines.filter((line) => line.type == 0),
       temp;
+      if (unselectedLines.length == 0){
+        this.isFinal = 1;
+        this.isLeaf = true;
+      }
     unselectedLines.forEach((value) => {
-      temp = new CustomNode(this, this.points, this.lines);
+      temp = new CustomNode(this.points, this.lines, player, this);
       temp.lines.map((val) => {
-        if (val.id == value.id) return { ...val, type: player };
+        if (val.id == value.id) {
+          val.type = player;
+          val.point1.degree[player-1]++;
+          val.point2.degree[player-1]++;
+        };
         return val;
       });
       this.children.push(temp);
@@ -49,32 +73,19 @@ class CustomNode {
     return value;
   }
 
-  // static checkLinesHit(line1, line2) {
-  //   if (line1.formula.a == line2.formula.a) return false;
-  //   let x, y;
-  //   if (line1.formula.a == line2.formula.a * -1) {
-  //     y = (line1.formula.b + line2.formula.b) / 2;
-  //     x = (y - line1.formula.b) / line1.formula.a;
-  //   } else {
-  //     x =
-  //       (line1.formula.b + line2.formula.b) /
-  //       (line1.formula.a + line2.formula.a);
-  //     y = line1.formula.a * x + line1.formula.b;
-  //   }
-  //   console.log(line1.formula);
-  //   console.log(line2.formula);
-  //   console.log(x, y);
-  //   return (
-  //     (line1.point1.x >= x &&
-  //       line1.point1.y >= y &&
-  //       line1.point2.x <= x &&
-  //       line2.point2.y <= y) ||
-  //     (line1.point1.x <= x &&
-  //       line1.point1.y <= y &&
-  //       line1.point2.x >= x &&
-  //       line2.point2.y >= y)
-  //   );
-  // }
+  minimax(alpha, beta, player){
+    if (this.isFinal || this.isLeaf){
+      return this.validate();
+    }
+    let value;
+    if (player == 1){
+      value = Number.NEGATIVE_INFINITY;
+      for ()
+    } else {
+
+    }
+    return value;
+  }
 
   static intersects(line1, line2) {
     var det, gamma, lambda;
@@ -115,68 +126,8 @@ class CustomNode {
   }
 
   lostCondition(player) {
-    let theLines = this.lines.filter(
-      (line) => line.type == player //&&
-      // line.point1.degree[player - 1] > 1 &&
-      // line.point2.degree[player - 1] > 1
-    );
-    if (theLines < 3) return false;
-    // let loose = false;
-
-    // for (let i = 0; i < theLines.length - 1; i++) {
-    //   for (let j = i + 1; j < theLines.length; j++) {
-    //     if (
-    //       theLines[i].point1.id == theLines[j].point2.id ||
-    //       theLines[i].point2.id == theLines[j].point2.id
-    //     ) {
-    //       let temp = theLines.filter(
-    //         (line, index) =>
-    //           index != j &&
-    //           index != i &&
-    //           (line.point1.id == theLines[j].point1.id ||
-    //             line.point2.id == theLines[j].point1.id) && ( line.point1.id == theLines[i].point1.id ||
-    //               line.point2.id == theLines[i].point1.id ||
-    //               line.point1.id == theLines[i].point2.id ||
-    //               line.poin2.id == theLines[i].point2.id)
-    //       );
-    //       if (temp.length > 0) {
-    //         // let temp2 = temp.filter(
-    //         //   (line) =>
-
-    //         // );
-    //         // if (temp2.length > 0) {
-    //         // }
-    //         loose = true;
-    //       }
-    //     } else if (
-    //       theLines[i].point1.id == theLines[j].point1.id ||
-    //       theLines[i].point2.id == theLines[j].point1.id
-    //     ) {
-    //       let temp = theLines.filter(
-    //         (line, index) =>
-    //           index != j &&
-    //           index != i &&
-    //           (line.point1.id == theLines[j].point2.id ||
-    //             line.point2.id == theLines[j].point2.id) &&(
-    //               line.point1.id == theLines[i].point1.id ||
-    //               line.point2.id == theLines[i].point1.id ||
-    //               line.point1.id == theLines[i].point2.id ||
-    //               line.poin2.id == theLines[i].point2.id)
-    //       );
-    //       if (temp.length > 0) {
-    //         // let temp2 = temp.filter(
-    //         //   (line) =>
-    //         // );
-    //         // if (temp2.length > 0) {
-    //         // }
-    //         loose = true;
-    //       }
-    //     }
-    //   }
-    // }
-
-    // return loose;
-    return CustomNode.findTriangle(theLines);
+    let theLines = this.lines.filter((line) => line.type == player);
+    return theLines > 2 && CustomNode.findTriangle(theLines);
   }
 }
 
