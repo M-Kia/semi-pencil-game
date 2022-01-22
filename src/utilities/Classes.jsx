@@ -36,46 +36,50 @@ class CustomNode {
     });
   }
 
-  validate(player) {
-    if (this.lostCondition(1)) {
-      return Number.POSITIVE_INFINITY;
-    }
-    if (this.lostCondition(2)) {
-      return Number.NEGATIVE_INFINITY;
-    }
-    let value = 0;
-    this.points.forEach((point) => {
-      let x = point.degree[0] == 1 ? 1 : point.degree[0] > 1 ? 6 : 0;
-      let y = point.degree[1] == 1 ? 1 : point.degree[1] > 1 ? -4 : 0;
-      // let x = point.degree[0] == 1 ? 1 : point.degree[0];
-      // let y = point.degree[1] == 1 ? 1 : point.degree[1];
-      value += x - y;
-    });
-    return value;
-  }
+  // validate() {
+  //   if (this.lostCondition(1)) {
+  //     return Number.POSITIVE_INFINITY;
+  //   }
+  //   if (this.lostCondition(2)) {
+  //     return Number.NEGATIVE_INFINITY;
+  //   }
+  //   // let value = 0;
+  //   // this.points.forEach((point) => {
+  //   //   let x = point.degree[0] == 1 ? 1 : point.degree[0] > 1 ? 4 : 0;
+  //   //   let y = point.degree[1] == 1 ? 1 : point.degree[1] > 1 ? -2 : 0;
+  //   //   // let x = point.degree[0] == 1 ? 1 : point.degree[0];
+  //   //   // let y = point.degree[1] == 1 ? 1 : point.degree[1];
+  //   //   value += x - y;
+  //   // });
+  //   // return value;
+  //   return 0;
+  // }
 
   // minimax(alpha, beta, depth, player) {
   minimax(alpha, beta, depth) {
-    if (depth == CustomNode.depthLimit) {
-      return this.validate();
-    }
+    // if (depth == CustomNode.depthLimit) {
+    //   return this.validate();
+    // }
     let value;
     let theLines = this.lines.filter((line) => line.type == 0);
     if (depth % 2 == 0) {
       value = Number.NEGATIVE_INFINITY;
       theLines.forEach((line) => {
         let temp = new CustomNode(this.points, this.lines);
-        temp.changeLine(line.id, 2)
+        temp.changeLine(line.id, 2);
         // if (temp.lostCondition(player)) {
         if (temp.lostCondition(2)) {
+          value = Number.NEGATIVE_INFINITY;
+        }else if (temp.lostCondition(1)){
           value = Number.POSITIVE_INFINITY;
+        } else {
+          // ].type = player;
+          value = Math.max(
+            value,
+            // temp.minimax(alpha, beta, depth + 1, player == 1 ? 2 : 1)
+            temp.minimax(alpha, beta, depth + 1, 2)
+          );
         }
-        // ].type = player;
-        value = Math.max(
-          value,
-          // temp.minimax(alpha, beta, depth + 1, player == 1 ? 2 : 1)
-          temp.minimax(alpha, beta, depth + 1, 2)
-        );
         alpha = Math.max(alpha, value);
         if (beta < alpha) return;
       });
@@ -83,17 +87,20 @@ class CustomNode {
       value = Number.POSITIVE_INFINITY;
       theLines.forEach((line) => {
         let temp = new CustomNode(this.points, this.lines);
-        temp.changeLine(line.id, 1)
+        temp.changeLine(line.id, 1);
         // if (temp.lostCondition(player)) {
         if (temp.lostCondition(1)) {
+          value = Number.POSITIVE_INFINITY;
+        } else if (temp.lostCondition(2)){
           value = Number.NEGATIVE_INFINITY;
+        }else {
+          // ].type = player;
+          value = Math.min(
+            value,
+            // temp.minimax(alpha, beta, depth + 1, player == 1 ? 2 : 1)
+            temp.minimax(alpha, beta, depth + 1, 1)
+          );
         }
-        // ].type = player;
-        value = Math.min(
-          value,
-          // temp.minimax(alpha, beta, depth + 1, player == 1 ? 2 : 1)
-          temp.minimax(alpha, beta, depth + 1, 1)
-        );
         beta = Math.min(beta, value);
         if (beta < alpha) return;
       });
