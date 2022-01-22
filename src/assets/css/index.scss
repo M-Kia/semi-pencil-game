@@ -37,18 +37,37 @@ body {
         }
       }
     }
+
+    .radioBtn {
+      [type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+
+        & + label,
+        & + span {
+          cursor: pointer;
+        }
+
+        &:checked + label,
+        &:checked + span {
+          outline: 2px solid #f00;
+        }
+      }
+    }
   }
 
   .shape {
     svg {
       width: 600px;
       height: 600px;
-      //   width: 900px;        
-      //   height: 900px;        
-  
+      //   width: 900px;
+      //   height: 900px;
+
       // @media (min-width: 1500px) {
-      //   width: 900px;        
-      //   height: 900px;        
+      //   width: 900px;
+      //   height: 900px;
       // }
 
       .line {
@@ -69,7 +88,6 @@ body {
           stroke: blue;
         }
       }
-
     }
   }
 }
