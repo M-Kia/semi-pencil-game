@@ -21,32 +21,32 @@ export function GameWrapper({ children }) {
       turn = playerTurn == 1 ? 2 : 1;
     }
     setPlayerTurn(turn);
-    changes();
   }
 
   function changeLine(id, player) {
-    let selectedLine = currentNode.lines.filter(
-      (line) => line.id == id && line.type == 0
-    );
-    if (selectedLine) {
-      selectedLine[0].type = player;
-      selectedLine[0].point1.degree[player - 1]++;
-      selectedLine[0].point2.degree[player - 1]++;
-      if (currentNode.lostCondition(player)) {
-        Swal.fire({
-          title: `${player == 1 ? "Computer" : "Player"} Won!!`,
-        });
+    currentNode.changeLine(id, player);
+    if (currentNode.lostCondition(player)) {
+      let playerTxt;
+      if (mode == 1) {
+        playerTxt = player == 1 ? "Computer" : "Player";
+      } else {
+        playerTxt = player == 1 ? "Player 2" : "Player 1";
       }
-    } else if (!currentNode.lines.some((line) => line.type == 0)) {
+      Swal.fire({
+        title: `${playerTxt} Won!!`,
+      });
+    } else if (currentNode.lines.every((line) => line.type != 0)) {
       Swal.fire({
         title: `Draw!!`,
       });
+    } else {
+      changePlayerTurn();
     }
+    changes();
   }
 
   function selectLine(id) {
     changeLine(id, playerTurn);
-    changePlayerTurn();
   }
 
   useEffect(() => {
@@ -60,7 +60,9 @@ export function GameWrapper({ children }) {
   }, [playerTurn]);
 
   return (
-    <GameContext.Provider value={{ mode, selectLine, modeChanger, changePlayerTurn }}>
+    <GameContext.Provider
+      value={{ mode, selectLine, modeChanger, changePlayerTurn }}
+    >
       {children}
     </GameContext.Provider>
   );

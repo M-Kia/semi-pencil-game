@@ -24,15 +24,15 @@ export default function Main() {
   }
 
   function changeMode(e) {
-    setMode(e.target.value);
+    setMode(parseInt(e.target.value));
   }
 
   function changeTurn(e) {
-    setTurn(e.target.value);
+    setTurn(parseInt(e.target.value));
   }
 
   function changeDifficulty(e) {
-    setDifficulty(e.target.value);
+    setDifficulty(parseInt(e.target.value));
   }
 
   return (
